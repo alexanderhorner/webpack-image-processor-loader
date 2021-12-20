@@ -1,0 +1,25 @@
+{
+  "name": "webpack-image-processor-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "tsc; cd test; webpack --stats-error-details"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "loader-utils": "^3.2.0",
+    "schema-utils": "^3.1.1",
+    "sharp": "^0.29.3"
+  },
+  "devDependencies": {
+    "@types/loader-utils": "^2.0.3",
+    "@types/sharp": "^0.29.4",
+    "ts-loader": "^9.2.6",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  }
+}
