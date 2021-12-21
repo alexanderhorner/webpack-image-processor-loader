@@ -34,14 +34,23 @@ async function default_1(source) {
     // });
     var callback = this.async();
     var buffer;
-    var sharpInstance = process((0, sharp_1.default)(source), options.presets[0].pipeline, options.presets);
+    try {
+        // TODO: Process preset based on url
+        var sharpInstance = process((0, sharp_1.default)(source), options.presets["thumbnail"], options.presets);
+    }
+    catch (error) {
+        var errorString = String(error);
+        var errorError = new Error(errorString);
+        callback(errorError);
+        return;
+    }
+    // Output sharpInstance to Buffer and return it back to webpack
     try {
         buffer = await sharpInstance.toBuffer();
     }
     catch (error) {
-        var msg = `[Sharp] ${error}`;
-        console.log(msg);
-        var errorError = new Error(msg);
+        var errorString = String(error);
+        var errorError = new Error(errorString);
         callback(errorError);
         return;
     }
@@ -54,15 +63,19 @@ function process(sharpInstance, methodArray, presets) {
         var args = method.splice(1);
         switch (methodName) {
             case "runPreset":
-                var presetName = args[0];
-                process(sharpInstance, presets[presetName], presets);
+                // var presetName: string = args[0]
+                // if (presets[presetName] !== null) {
+                //     process(sharpInstance, presets[presetName], presets)
+                // } else {
+                //     throw new Error(`${presetName} is not defined.`)
+                // }
                 break;
             default:
                 if (typeof sharpInstance[methodName] === 'function') {
                     sharpInstance = sharpInstance[methodName](...args);
                 }
                 else {
-                    console.log("Sharp Method", methodName, "doesn't exist.");
+                    throw new Error(`Sharp Method ${methodName} doesn't exist.`);
                 }
                 ;
         }

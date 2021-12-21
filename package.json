@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "test": "tsc; cd test; webpack --stats-error-details"
+    "test": "tsc; cd test; webpack"
   },
   "author": "",
   "license": "MIT",
