@@ -4,33 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sharp_1 = __importDefault(require("sharp"));
-const schema = {
-    type: 'object',
-    properties: {
-        test: {
-            type: 'string',
-        },
-    },
-};
-const options = {
-    presets: {
-        "thumbnail": [
-            ["resize", 2000, 300],
-            ["resize", 300, 300],
-            ["runPreset", "flip"],
-            ["greyscale"],
-            ["jpeg", { quality: 40 }]
-        ],
-        "flip": [
-            ["flip"],
-            ["jpeg", { quality: 50 }]
-        ]
-    }
-};
 // Webpack loader config
 module.exports.raw = true; // make sure loader recieves raw input
 async function default_1(source) {
-    // const options = this.getOptions();
+    const options = this.getOptions();
     // validate(schema, options, {
     //     name: 'Example Loader',
     //     baseDataPath: 'options',
@@ -39,7 +16,7 @@ async function default_1(source) {
     var buffer;
     try {
         // TODO: Process preset based on url
-        var sharpInstance = process((0, sharp_1.default)(source), options.presets["thumbnail"], options.presets, 0);
+        var sharpInstance = process((0, sharp_1.default)(source), "thumbnail", options.presets, []);
     }
     catch (error) {
         var errorString = String(error);
@@ -60,21 +37,22 @@ async function default_1(source) {
     callback(null, buffer);
 }
 exports.default = default_1;
-function process(sharpInstance, pipeline, presets, depth) {
-    console.log("Running Preset");
-    var pipeline2 = pipeline;
-    console.log(pipeline2);
-    pipeline2.forEach(method => {
-        console.log("Method: " + method);
-        var methodName = method[0];
-        var args = method.splice(1);
+function process(sharpInstance, presetName, presets, executedPresets) {
+    if (presets[presetName] === undefined) {
+        throw new Error(`Preset ${presetName} is not defined.`);
+    }
+    if (executedPresets.includes(presetName)) {
+        throw new Error(`Infinite Loop! Preset "${presetName}" calls itself. Trace: ${executedPresets},*${presetName}*`);
+    }
+    executedPresets.push(presetName);
+    const pipeline = presets[presetName];
+    pipeline.forEach(command => {
+        var methodName = command[0];
+        var args = Array.from(command).splice(1);
         switch (methodName) {
             case "runPreset":
                 var presetName = args[0];
-                if (presets[presetName] === undefined) {
-                    throw new Error(`Preset ${presetName} is not defined.`);
-                }
-                process(sharpInstance, presets[presetName], presets, depth + 1);
+                process(sharpInstance, presetName, presets, executedPresets);
                 break;
             default:
                 if (typeof sharpInstance[methodName] === 'function') {

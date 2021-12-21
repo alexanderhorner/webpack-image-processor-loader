@@ -24,6 +24,26 @@ const config = {
             {
                 test: /\.(png|jpe?g|webp|tiff?)$/i,
                 loader: '../dist/index.js',
+                options: {
+                    presets: {
+                        "thumbnail": [
+                            ["resize", 2000, 300],
+                            ["resize", 300, 300],
+                            ["runPreset", "flip"],
+                            ["greyscale"],
+                            ["jpeg", { quality: 40}]
+                        ],
+                        "flip": [
+                            ["flip"],
+                            ["jpeg", { quality: 50}],
+                            ["runPreset", "flop"]
+                        ],
+                        "flop": [
+                            ["flop"],
+                            ["jpeg", { quality: 50}],
+                        ]
+                    }
+                }
             }
         ],
     },

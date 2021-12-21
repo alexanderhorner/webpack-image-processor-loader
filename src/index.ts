@@ -5,14 +5,14 @@ import { LoaderContext, LoaderDefinition, LoaderDefinitionFunction, LoaderModule
 
 import sharp, { Sharp } from 'sharp'
 
-const schema:Schema = {
-    type: 'object',
-    properties: {
-        test: {
-            type: 'string',
-        },
-    },
-};
+// const schema:Schema = {
+//     type: 'object',
+//     properties: {
+//         presets: {
+//             type: 'object',
+//         },
+//     },
+// };
 
 
 type Pipeline = Array<Array<any>>
@@ -21,27 +21,11 @@ interface Options {
     presets: Object
 }
 
-const options:Options = {
-    presets: {
-        "thumbnail": [
-            ["resize", 2000, 300],
-            ["resize", 300, 300],
-            ["runPreset", "flip"],
-            ["greyscale"],
-            ["jpeg", { quality: 40}]
-        ],
-        "flip": [
-            ["flip"],
-            ["jpeg", { quality: 50}]
-        ]
-    }
-}
-
 // Webpack loader config
 module.exports.raw = true; // make sure loader recieves raw input
 
 export default async function (this:LoaderContext<any>, source: Buffer) {
-    // const options = this.getOptions();
+    const options = this.getOptions();
 
     // validate(schema, options, {
     //     name: 'Example Loader',
@@ -54,7 +38,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     try {
         // TODO: Process preset based on url
-        var sharpInstance = process(sharp(source), options.presets["thumbnail"], options.presets, 0)  
+        var sharpInstance = process(sharp(source), "thumbnail", options.presets, [])  
     } catch (error) {
         var errorString = String(error)
         var errorError = new Error(errorString)
@@ -78,31 +62,30 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     callback(null, buffer)
 }
 
-function process(sharpInstance:Sharp, pipeline: Pipeline, presets: Object, depth: number):Sharp {
-    console.log("Running Preset")
+function process(sharpInstance:Sharp, presetName: string, presets: Object, executedPresets: string[]):Sharp {
 
-    var pipeline2 = pipeline
+    if (presets[presetName] === undefined) {
+        throw new Error(`Preset ${presetName} is not defined.`)
+    }
+
+    if (executedPresets.includes(presetName)) {
+        throw new Error(`Infinite Loop! Preset "${presetName}" calls itself. Trace: ${executedPresets},*${presetName}*`);
+    }
+
+    executedPresets.push(presetName)
+
+    const pipeline: Pipeline = presets[presetName]
     
-    console.log(pipeline2);
-    
+    pipeline.forEach(command => {
 
-    pipeline2.forEach(method => {
-
-        console.log("Method: " + method);
-        
-
-        var methodName:string = method[0]
-        var args = method.splice(1)
+        var methodName:string = command[0]
+        var args = Array.from(command).splice(1)
 
         switch (methodName) {
             case "runPreset":
                 var presetName: string = args[0]
 
-                if (presets[presetName] === undefined) {
-                    throw new Error(`Preset ${presetName} is not defined.`)
-                }
-
-                process(sharpInstance, presets[presetName], presets, depth + 1)
+                process(sharpInstance, presetName, presets, executedPresets)
                 
                 break;
         
