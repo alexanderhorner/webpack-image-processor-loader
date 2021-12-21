@@ -16,11 +16,14 @@ const options = {
     presets: {
         "thumbnail": [
             ["resize", 2000, 300],
-            ["flip"],
             ["resize", 300, 300],
             ["runPreset", "flip"],
             ["greyscale"],
             ["jpeg", { quality: 40 }]
+        ],
+        "flip": [
+            ["flip"],
+            ["jpeg", { quality: 50 }]
         ]
     }
 };
@@ -36,7 +39,7 @@ async function default_1(source) {
     var buffer;
     try {
         // TODO: Process preset based on url
-        var sharpInstance = process((0, sharp_1.default)(source), options.presets["thumbnail"], options.presets);
+        var sharpInstance = process((0, sharp_1.default)(source), options.presets["thumbnail"], options.presets, 0);
     }
     catch (error) {
         var errorString = String(error);
@@ -57,18 +60,21 @@ async function default_1(source) {
     callback(null, buffer);
 }
 exports.default = default_1;
-function process(sharpInstance, methodArray, presets) {
-    methodArray.forEach(method => {
+function process(sharpInstance, pipeline, presets, depth) {
+    console.log("Running Preset");
+    var pipeline2 = pipeline;
+    console.log(pipeline2);
+    pipeline2.forEach(method => {
+        console.log("Method: " + method);
         var methodName = method[0];
         var args = method.splice(1);
         switch (methodName) {
             case "runPreset":
-                // var presetName: string = args[0]
-                // if (presets[presetName] !== null) {
-                //     process(sharpInstance, presets[presetName], presets)
-                // } else {
-                //     throw new Error(`${presetName} is not defined.`)
-                // }
+                var presetName = args[0];
+                if (presets[presetName] === undefined) {
+                    throw new Error(`Preset ${presetName} is not defined.`);
+                }
+                process(sharpInstance, presets[presetName], presets, depth + 1);
                 break;
             default:
                 if (typeof sharpInstance[methodName] === 'function') {

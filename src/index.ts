@@ -25,11 +25,14 @@ const options:Options = {
     presets: {
         "thumbnail": [
             ["resize", 2000, 300],
-            ["flip"],
             ["resize", 300, 300],
             ["runPreset", "flip"],
             ["greyscale"],
             ["jpeg", { quality: 40}]
+        ],
+        "flip": [
+            ["flip"],
+            ["jpeg", { quality: 50}]
         ]
     }
 }
@@ -51,7 +54,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     try {
         // TODO: Process preset based on url
-        var sharpInstance = process(sharp(source), options.presets["thumbnail"], options.presets)  
+        var sharpInstance = process(sharp(source), options.presets["thumbnail"], options.presets, 0)  
     } catch (error) {
         var errorString = String(error)
         var errorError = new Error(errorString)
@@ -75,22 +78,32 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     callback(null, buffer)
 }
 
-function process(sharpInstance:Sharp, methodArray: Pipeline, presets: Object):Sharp {
+function process(sharpInstance:Sharp, pipeline: Pipeline, presets: Object, depth: number):Sharp {
+    console.log("Running Preset")
 
-    methodArray.forEach(method => {
+    var pipeline2 = pipeline
+    
+    console.log(pipeline2);
+    
+
+    pipeline2.forEach(method => {
+
+        console.log("Method: " + method);
+        
 
         var methodName:string = method[0]
         var args = method.splice(1)
 
         switch (methodName) {
             case "runPreset":
-                // var presetName: string = args[0]
+                var presetName: string = args[0]
 
-                // if (presets[presetName] !== null) {
-                //     process(sharpInstance, presets[presetName], presets)
-                // } else {
-                //     throw new Error(`${presetName} is not defined.`)
-                // }
+                if (presets[presetName] === undefined) {
+                    throw new Error(`Preset ${presetName} is not defined.`)
+                }
+
+                process(sharpInstance, presets[presetName], presets, depth + 1)
+                
                 break;
         
             default:
