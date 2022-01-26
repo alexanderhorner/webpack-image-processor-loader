@@ -31,11 +31,10 @@ const config = {
                             ["resize", 300, 300],
                             ["runPreset", "flip"],
                             ["greyscale"],
-                            ["jpeg", { quality: 40}]
+                            ["runPreset", "flip"],
                         ],
                         "flip": [
                             ["flip"],
-                            ["jpeg", { quality: 50}],
                             ["runPreset", "flop"]
                         ],
                         "flop": [

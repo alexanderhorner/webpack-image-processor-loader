@@ -8,6 +8,7 @@ const sharp_1 = __importDefault(require("sharp"));
 module.exports.raw = true; // make sure loader recieves raw input
 async function default_1(source) {
     const options = this.getOptions();
+    const query = this.resourceQuery;
     // validate(schema, options, {
     //     name: 'Example Loader',
     //     baseDataPath: 'options',
@@ -27,6 +28,7 @@ async function default_1(source) {
     // Output sharpInstance to Buffer and return it back to webpack
     try {
         buffer = await sharpInstance.toBuffer();
+        const { format } = await (0, sharp_1.default)(buffer).metadata();
     }
     catch (error) {
         var errorString = String(error);
@@ -35,6 +37,7 @@ async function default_1(source) {
         return;
     }
     callback(null, buffer);
+    // callback(null,  `export default ${JSON.stringify(buffer)}`)
 }
 exports.default = default_1;
 function process(sharpInstance, presetName, presets, executedPresets) {
@@ -44,26 +47,30 @@ function process(sharpInstance, presetName, presets, executedPresets) {
     if (executedPresets.includes(presetName)) {
         throw new Error(`Infinite Loop! Preset "${presetName}" calls itself. Trace: ${executedPresets},*${presetName}*`);
     }
-    executedPresets.push(presetName);
+    const newExecutedPresets = Array.from(executedPresets);
+    newExecutedPresets.push(presetName);
     const pipeline = presets[presetName];
     pipeline.forEach(command => {
-        var methodName = command[0];
-        var args = Array.from(command).splice(1);
+        // console.log("Command:" + command);
+        const methodName = command[0];
+        const args = Array.from(command).splice(1);
         switch (methodName) {
             case "runPreset":
-                var presetName = args[0];
-                process(sharpInstance, presetName, presets, executedPresets);
+                const presetName = args[0];
+                process(sharpInstance, presetName, presets, newExecutedPresets);
                 break;
             default:
                 if (typeof sharpInstance[methodName] === 'function') {
                     sharpInstance = sharpInstance[methodName](...args);
                 }
                 else {
-                    throw new Error(`Sharp Method ${methodName} doesn't exist.`);
+                    throw new Error(`Sharp Method "${methodName}" doesn't exist.`);
                 }
                 ;
         }
     });
-    return (sharpInstance);
+    return sharpInstance;
 }
+// function getQueryParameters(params:type) {
+// }
 //# sourceMappingURL=index.js.map
