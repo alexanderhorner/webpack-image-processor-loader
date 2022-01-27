@@ -1,0 +1,31 @@
+{
+  "name": "webpack-image-processor-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "tsc; cd test; rm -r dist; webpack",
+    "benchmark": "tsc; cd test/benchmark; rm -r dist; webpack"
+  },
+  "author": "Alexander Horner",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "file-loader": "^6.2.0",
+    "loader-utils": "^3.2.0",
+    "query-string": "^7.1.0",
+    "replace-ext": "^2.0.0",
+    "schema-utils": "^3.1.1",
+    "sharp": "^0.29.3"
+  },
+  "devDependencies": {
+    "@types/file-loader": "^5.0.1",
+    "@types/loader-utils": "^2.0.3",
+    "@types/replace-ext": "^2.0.0",
+    "@types/sharp": "^0.29.4",
+    "ts-loader": "^9.2.6",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  }
+}
