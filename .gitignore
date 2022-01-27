@@ -75,6 +75,4 @@ typings/
 # FuseBox cache
 .fusebox/
 
-
-.vscode
 .DS_Store
