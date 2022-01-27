@@ -45,7 +45,6 @@ async function default_1(source) {
         return;
     }
     callback(null, buffer);
-    // callback(null,  `export default ${JSON.stringify(buffer)}`)
 }
 exports.default = default_1;
 /**
@@ -67,25 +66,7 @@ function process(sharpInstance, pipelineName, pipelines, executedPipelines) {
     const newExecutedPipelines = Array.from(executedPipelines);
     newExecutedPipelines.push(pipelineName);
     const pipeline = pipelines[pipelineName];
-    pipeline.forEach(command => {
-        // console.log("Command:" + command);
-        const methodName = command[0];
-        const args = Array.from(command).splice(1);
-        switch (methodName) {
-            case "runPipeline":
-                const pipelineName = args[0];
-                process(sharpInstance, pipelineName, pipelines, newExecutedPipelines);
-                break;
-            default:
-                if (typeof sharpInstance[methodName] === 'function') {
-                    sharpInstance = sharpInstance[methodName](...args);
-                }
-                else {
-                    throw new Error(`Sharp Method "${methodName}" doesn't exist.`);
-                }
-                ;
-        }
-    });
+    sharpInstance = pipeline(sharpInstance);
     return sharpInstance;
 }
 /**
