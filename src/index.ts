@@ -53,8 +53,6 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     var buffer:Buffer
 
     try {
-        // TODO: Process pipeline based on url
-
         var sharpInstance = process(sharp(source), pipelineName, options.pipelines, [])  
     } catch (error) {
         var errorString = String(error)
@@ -66,10 +64,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     // Output sharpInstance to Buffer and return it back to webpack
     try {
-        buffer = await sharpInstance.toBuffer()
-
-        // TODO: set output format
-        const { format } = await sharp(buffer).metadata()
+        buffer = await generateOutput(sharpInstance)
 
     } catch (error) {
         var errorString = String(error)
@@ -84,7 +79,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 }
 
 /**
- * It processes an image given a pipeline name
+ * Processes an image given a pipeline name
  * 
  * @param {Sharp} sharpInstance Image to be processed inform of an sharp instance.
  * @param {string} pipelineName Name of the pipeline.
@@ -104,7 +99,6 @@ function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, e
 
     const newExecutedPipelines = Array.from(executedPipelines)
     newExecutedPipelines.push(pipelineName)
-
 
     const pipeline: Pipeline = pipelines[pipelineName]
     
@@ -135,11 +129,21 @@ function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, e
 
     })
     
-    
     return sharpInstance
-
 }
 
-// function getQueryParameters(paramsq) {
-    
-// }
+/**
+ * Generates the final output buffer
+ * 
+ * @param {Sharp} sharpInstance the processed image as sharp instance 
+ * @returns {Buffer} Final img
+ */
+async function generateOutput(sharpInstance: Sharp) {
+
+    const buffer = await sharpInstance.toBuffer()
+
+    // TODO: set output format
+    const { format } = await sharp(buffer).metadata()
+
+    return buffer
+}

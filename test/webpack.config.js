@@ -26,20 +26,33 @@ const config = {
                 loader: '../dist/index.js',
                 options: {
                     pipelines: {
-                        "thumbnail": [
-                            ["resize", 2000, 300],
-                            ["resize", 300, 300],
-                            ["runPipeline", "flip"],
-                            ["greyscale"],
-                            ["runPipeline", "flip"],
+                        benchmark: [
+                            ["resize", 1000, 1000],
+                            ["runPipeline", "benchmarkOperations"],
+                            ["toFormat", "webp", { quality: 90 }]
                         ],
-                        "flip": [
+                        benchmark2: [
+                            ["resize", 500, 500],
+                            ["runPipeline", "benchmarkOperations"],
+                            ["toFormat", "webp", { quality: 60 }]
+                        ],
+                        benchmark3: [
+                            ["resize", 1000, 1000],
+                            ["runPipeline", "benchmarkOperations"],
+                            ["toFormat", "jpeg", { quality: 90 }]
+                        ],
+                        benchmark4: [
+                            ["resize", 500, 500],
+                            ["runPipeline", "benchmarkOperations"],
+                            ["toFormat", "jpeg", { quality: 60 }]
+                        ],
+                        benchmarkOperations: [
                             ["flip"],
-                            ["runPipeline", "flop"]
-                        ],
-                        "flop": [
                             ["flop"],
-                            ["jpeg", { quality: 50}],
+                            ["rotate", 45],
+                            ["sharpen"],
+                            ["normalise"],
+                            ["toColorspace", "srgb"],
                         ]
                     }
                 }

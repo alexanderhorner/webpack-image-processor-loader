@@ -35,9 +35,7 @@ async function default_1(source) {
     }
     // Output sharpInstance to Buffer and return it back to webpack
     try {
-        buffer = await sharpInstance.toBuffer();
-        // TODO: set output format
-        const { format } = await (0, sharp_1.default)(buffer).metadata();
+        buffer = await generateOutput(sharpInstance);
     }
     catch (error) {
         var errorString = String(error);
@@ -89,6 +87,16 @@ function process(sharpInstance, pipelineName, pipelines, executedPipelines) {
     });
     return sharpInstance;
 }
-// function getQueryParameters(paramsq) {
-// }
+/**
+ * Generates the final output buffer
+ *
+ * @param {Sharp} sharpInstance the processed image as sharp instance
+ * @returns {Buffer} Final img
+ */
+async function generateOutput(sharpInstance) {
+    const buffer = await sharpInstance.toBuffer();
+    // TODO: set output format
+    const { format } = await (0, sharp_1.default)(buffer).metadata();
+    return buffer;
+}
 //# sourceMappingURL=index.js.map
