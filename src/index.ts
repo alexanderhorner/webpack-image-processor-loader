@@ -17,9 +17,6 @@ import replaceExt from 'replace-ext'
 //     },
 // };
 
-
-type Pipeline = Array<Array<any>>
-
 interface Options {
     pipelines: Object
 }
@@ -77,7 +74,6 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     }
 
     callback(null,  buffer)
-    // callback(null,  `export default ${JSON.stringify(buffer)}`)
 }
 
 /**
@@ -102,34 +98,9 @@ function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, e
     const newExecutedPipelines = Array.from(executedPipelines)
     newExecutedPipelines.push(pipelineName)
 
-    const pipeline: Pipeline = pipelines[pipelineName]
-    
-    pipeline.forEach(command => {
+    const pipeline: Function = pipelines[pipelineName]
 
-        // console.log("Command:" + command);
-
-        const methodName:string = command[0]
-        const args = Array.from(command).splice(1)
-
-        switch (methodName) {
-            case "runPipeline":
-                const pipelineName: string = args[0]
-
-                process(sharpInstance, pipelineName, pipelines, newExecutedPipelines)
-                
-                break;
-        
-            default:
-                if (typeof sharpInstance[methodName] === 'function') {
-                    sharpInstance = sharpInstance[methodName](...args)
-                } else {
-                    throw new Error(`Sharp Method "${methodName}" doesn't exist.`)
-                };
-        }
-        
-        
-
-    })
+    sharpInstance = pipeline(sharpInstance)
     
     return sharpInstance
 }
