@@ -3,12 +3,13 @@ import { validate } from 'schema-utils';
 import { Schema } from 'schema-utils/declarations/ValidationError';
 import { LoaderContext, LoaderDefinition, LoaderDefinitionFunction, LoaderModule, LoaderTargetPlugin, prefetch, SourceMapDevToolPlugin } from 'webpack';
 
+import queryString from 'query-string'
 import sharp, { Sharp } from 'sharp'
 
 // const schema:Schema = {
 //     type: 'object',
 //     properties: {
-//         presets: {
+//         pipelines: {
 //             type: 'object',
 //         },
 //     },
@@ -18,30 +19,43 @@ import sharp, { Sharp } from 'sharp'
 type Pipeline = Array<Array<any>>
 
 interface Options {
-    presets: Object
+    pipelines: Object
 }
 
 // Webpack loader config
 module.exports.raw = true; // make sure loader recieves raw input
 
+
 export default async function (this:LoaderContext<any>, source: Buffer) {
+
+    var callback = this.async();
     
     const options = this.getOptions()
 
     const query = this.resourceQuery
 
+    const queryObject = queryString.parse(query)
+
+    const pipelineName = queryObject.pipeline
+
+    if (typeof pipelineName != "string") {
+        var error = new Error("Pipeline not defined in query string")
+        
+        callback(error)
+        return
+    }
+    
     // validate(schema, options, {
     //     name: 'Example Loader',
     //     baseDataPath: 'options',
     // });
 
-    var callback = this.async();
-
     var buffer:Buffer
 
     try {
-        // TODO: Process preset based on url
-        var sharpInstance = process(sharp(source), "thumbnail", options.presets, [])  
+        // TODO: Process pipeline based on url
+
+        var sharpInstance = process(sharp(source), pipelineName, options.pipelines, [])  
     } catch (error) {
         var errorString = String(error)
         var errorError = new Error(errorString)
@@ -50,10 +64,11 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
         return
     }
 
-
     // Output sharpInstance to Buffer and return it back to webpack
     try {
         buffer = await sharpInstance.toBuffer()
+
+        // TODO: set output format
         const { format } = await sharp(buffer).metadata()
 
     } catch (error) {
@@ -68,21 +83,30 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     // callback(null,  `export default ${JSON.stringify(buffer)}`)
 }
 
-function process(sharpInstance:Sharp, presetName: string, presets: Object, executedPresets: string[]):Sharp {
+/**
+ * It processes an image given a pipeline name
+ * 
+ * @param {Sharp} sharpInstance Image to be processed inform of an sharp instance.
+ * @param {string} pipelineName Name of the pipeline.
+ * @param {Object} pipelines All the available Pipelines.
+ * @param {string[]} executedPipelines All the previously executed pipelines to prevent infinite loop.
+ * @returns {Sharp} returns processed image as an sharp instance.
+ */
+function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, executedPipelines: string[]):Sharp {
 
-    if (presets[presetName] === undefined) {
-        throw new Error(`Preset ${presetName} is not defined.`)
+    if (pipelines[pipelineName] === undefined) {
+        throw new Error(`Pipeline ${pipelineName} is not defined.`)
     }
 
-    if (executedPresets.includes(presetName)) {
-        throw new Error(`Infinite Loop! Preset "${presetName}" calls itself. Trace: ${executedPresets},*${presetName}*`);
+    if (executedPipelines.includes(pipelineName)) {
+        throw new Error(`Infinite Loop! Pipeline "${pipelineName}" calls itself. Trace: ${executedPipelines},*${pipelineName}*`);
     }
 
-    const newExecutedPresets = Array.from(executedPresets)
-    newExecutedPresets.push(presetName)
+    const newExecutedPipelines = Array.from(executedPipelines)
+    newExecutedPipelines.push(pipelineName)
 
 
-    const pipeline: Pipeline = presets[presetName]
+    const pipeline: Pipeline = pipelines[pipelineName]
     
     pipeline.forEach(command => {
 
@@ -92,10 +116,10 @@ function process(sharpInstance:Sharp, presetName: string, presets: Object, execu
         const args = Array.from(command).splice(1)
 
         switch (methodName) {
-            case "runPreset":
-                const presetName: string = args[0]
+            case "runPipeline":
+                const pipelineName: string = args[0]
 
-                process(sharpInstance, presetName, presets, newExecutedPresets)
+                process(sharpInstance, pipelineName, pipelines, newExecutedPipelines)
                 
                 break;
         
@@ -116,6 +140,6 @@ function process(sharpInstance:Sharp, presetName: string, presets: Object, execu
 
 }
 
-// function getQueryParameters(params:type) {
+// function getQueryParameters(paramsq) {
     
 // }

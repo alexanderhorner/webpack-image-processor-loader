@@ -1,5 +1,10 @@
 const fs = require("fs")
 
-fs.readdirSync("./img").forEach((file: string) => {
-    require("./" + file + "?preset=test");
+const files = fs.readdirSync("./img")
+
+files.forEach((file: string) => {
+    require("./" + file + "?pipeline=benchmark");
+    require("./" + file + "?pipeline=benchmark2");
+    require("./" + file + "?pipeline=benchmark3");
+    require("./" + file + "?pipeline=benchmark4");
 });

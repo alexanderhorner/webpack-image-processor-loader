@@ -25,17 +25,17 @@ const config = {
                 test: /\.(png|jpe?g|webp|tiff?)$/i,
                 loader: '../dist/index.js',
                 options: {
-                    presets: {
+                    pipelines: {
                         "thumbnail": [
                             ["resize", 2000, 300],
                             ["resize", 300, 300],
-                            ["runPreset", "flip"],
+                            ["runPipeline", "flip"],
                             ["greyscale"],
-                            ["runPreset", "flip"],
+                            ["runPipeline", "flip"],
                         ],
                         "flip": [
                             ["flip"],
-                            ["runPreset", "flop"]
+                            ["runPipeline", "flop"]
                         ],
                         "flop": [
                             ["flop"],
