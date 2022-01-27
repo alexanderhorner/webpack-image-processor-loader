@@ -40,15 +40,12 @@ module.exports = {
         loader: '../../dist/index.js',
         options: {
           pipelines: {
-            thumbnail: [
-              ["resize", 720, 1280],
-              ["toFormat", "webp", { quality: 60 }]
-            ],
-            profilepic: [
-              ["resize", 256, 256],
-              ["sharpen"],
-              ["toFormat", "jpg", { quality: 60 }]
-            ]
+            thumbnail: sharp => sharp.resize(1280, 720).toFormat("png"),
+
+            profilepic: sharp => 
+              sharp.resize(256, 256)
+                   .toFormat("jpeg", { quality: 60 })
+
           }
         }
       },
