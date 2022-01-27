@@ -1,5 +1,5 @@
 # webpack-image-processor-loader
-A loader for processing images.
+A webpack loader for processing images.
 
 This loader enable you to process [sharp](https://sharp.pixelplumbing.com/) on images when webpack bundles them.
 
