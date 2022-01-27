@@ -1,10 +1,11 @@
 import { urlToRequest } from 'loader-utils';
 import { validate } from 'schema-utils';
 import { Schema } from 'schema-utils/declarations/ValidationError';
-import { LoaderContext, LoaderDefinition, LoaderDefinitionFunction, LoaderModule, LoaderTargetPlugin, prefetch, SourceMapDevToolPlugin } from 'webpack';
+import { LoaderContext } from 'webpack';
 
 import queryString from 'query-string'
-import sharp, { Sharp } from 'sharp'
+const { Worker } = require('worker_threads')
+
 
 // const schema:Schema = {
 //     type: 'object',
@@ -52,98 +53,50 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     var buffer:Buffer
 
-    try {
-        var sharpInstance = process(sharp(source), pipelineName, options.pipelines, [])  
-    } catch (error) {
-        var errorString = String(error)
-        var errorError = new Error(errorString)
+    runWorker(source, pipelineName, options.pipelines).then(data => {
+        callback(null,  data)
+    }).catch(error => {
+        callback(error)
+    })
+
+    // try {
+    //     buffer = await runWorker(source, pipelineName, options.pipelines)
+    // } catch (error) {
         
-        callback(errorError)
-        return
-    }
+    // }
 
-    // Output sharpInstance to Buffer and return it back to webpack
-    try {
-        buffer = await generateOutput(sharpInstance)
-
-    } catch (error) {
-        var errorString = String(error)
-        var errorError = new Error(errorString)
-        
-        callback(errorError)
-        return
-    }
-
-    callback(null,  buffer)
+    // callback(null,  buffer)
     // callback(null,  `export default ${JSON.stringify(buffer)}`)
 }
 
-/**
- * Processes an image given a pipeline name
- * 
- * @param {Sharp} sharpInstance Image to be processed inform of an sharp instance.
- * @param {string} pipelineName Name of the pipeline.
- * @param {Object} pipelines All the available Pipelines.
- * @param {string[]} executedPipelines All the previously executed pipelines to prevent infinite loop.
- * @returns {Sharp} returns processed image as an sharp instance.
- */
-function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, executedPipelines: string[]):Sharp {
-
-    if (pipelines[pipelineName] === undefined) {
-        throw new Error(`Pipeline ${pipelineName} is not defined.`)
-    }
-
-    if (executedPipelines.includes(pipelineName)) {
-        throw new Error(`Infinite Loop! Pipeline "${pipelineName}" calls itself. Trace: ${executedPipelines},*${pipelineName}*`);
-    }
-
-    const newExecutedPipelines = Array.from(executedPipelines)
-    newExecutedPipelines.push(pipelineName)
-
-    const pipeline: Pipeline = pipelines[pipelineName]
+function runWorker(source: Buffer, pipelineName: string, pipelines: Object) {
     
-    pipeline.forEach(command => {
+    const workerData = {
+        source: source,
+        pipelineName: pipelineName,
+        pipelines: pipelines
+    }
 
-        // console.log("Command:" + command);
+    const worker = new Worker('/Users/alexanderhorner/Documents/GitHub/webpack-image-processor-loader/dist/worker.js', { workerData: workerData });
 
-        const methodName:string = command[0]
-        const args = Array.from(command).splice(1)
 
-        switch (methodName) {
-            case "runPipeline":
-                const pipelineName: string = args[0]
-
-                process(sharpInstance, pipelineName, pipelines, newExecutedPipelines)
-                
-                break;
+    return new Promise((resolve, reject) => {
         
-            default:
-                if (typeof sharpInstance[methodName] === 'function') {
-                    sharpInstance = sharpInstance[methodName](...args)
-                } else {
-                    throw new Error(`Sharp Method "${methodName}" doesn't exist.`)
-                };
-        }
-        
-        
-
+        worker.on('message', (result:Buffer) => {
+            resolve(Buffer.from(result, 'utf8'))
+        })
+    
+        worker.on('error', (error: string) => {
+            reject(new Error(error));
+        })
+    
+        worker.on('exit', (code: number) => {
+            if (code !== 0) {
+                reject(new Error(`Worker stopped with  ${code} exit code`))
+            }
+            reject(new Error(`Worker exited too early`))
+        })
     })
+
     
-    return sharpInstance
-}
-
-/**
- * Generates the final output buffer
- * 
- * @param {Sharp} sharpInstance the processed image as sharp instance 
- * @returns {Buffer} Final img
- */
-async function generateOutput(sharpInstance: Sharp) {
-
-    const buffer = await sharpInstance.toBuffer()
-
-    // TODO: set output format
-    const { format } = await sharp(buffer).metadata()
-
-    return buffer
 }
