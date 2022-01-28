@@ -37,7 +37,7 @@ module.exports = {
       // ...
       {
         test: /\.(png|jpe?g|webp|tiff?)/i,
-        loader: '../../dist/index.js',
+        loader: 'webpack-image-processor-loader',
         options: {
           pipelines: {
             thumbnail: sharp => sharp.resize(1280, 720).toFormat("jpeg"),
