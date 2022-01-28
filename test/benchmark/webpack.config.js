@@ -23,24 +23,24 @@ const config = {
                 options: {
                     pipelines: {
                         benchmark: sharp => 
-                            sharp.resize(4000, 4000)
+                            sharp.resize(2000, 2000)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("webp", { quality: 90 }),
                         
                         
                         benchmark2: sharp => 
-                            sharp.resize(2000, 2000)
+                            sharp.resize(1000, 1000)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("webp", { quality: 60 }),
                         
                         
                         benchmark3: sharp => 
-                            sharp.resize(4000, 4000)
+                            sharp.resize(2000, 2000)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("jpeg", { quality: 90 }),
                         
                         benchmark4: sharp => 
-                            sharp.resize(2000, 2000)
+                            sharp.resize(1000, 1000)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("jpeg", { quality: 60 }),
                         
@@ -51,6 +51,10 @@ const config = {
                                  .sharpen()
                                  .normalise()
                                  .toColorspace("srgb")
+                                 .modulate({
+                                    brightness: 1.2,
+                                    saturation: 1.5
+                                 })
                     }
                 }
             }
