@@ -22,25 +22,25 @@ const config = {
                 loader: '../../dist/index.js',
                 options: {
                     pipelines: {
-                        benchmark: sharp => 
-                            sharp.resize(2000, 2000)
+                        benchmark1: sharp => 
+                            sharp.resize(4000, 2000)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("webp", { quality: 90 }),
                         
                         
                         benchmark2: sharp => 
-                            sharp.resize(1000, 1000)
+                            sharp.resize(2000, 1500)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("webp", { quality: 60 }),
                         
                         
                         benchmark3: sharp => 
-                            sharp.resize(2000, 2000)
+                            sharp.resize(4000, 2000)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("jpeg", { quality: 90 }),
                         
                         benchmark4: sharp => 
-                            sharp.resize(1000, 1000)
+                            sharp.resize(2000, 1500)
                                  .runPipeline("benchmarkOperations")
                                  .toFormat("jpeg", { quality: 60 }),
                         
