@@ -40,13 +40,26 @@ module.exports = {
         loader: '../../dist/index.js',
         options: {
           pipelines: {
-            thumbnail: sharp => sharp.resize(1280, 720).toFormat("png"),
+						thumbnail: sharp => sharp.resize(1280, 720).toFormat("jpeg"),
 
-            profilepic: sharp => 
-              sharp.resize(256, 256)
-                   .toFormat("jpeg", { quality: 60 })
+						backgroundSmall: sharp =>
+							sharp.resize(500, 500)
+								   .runPipeline("background")
+								   .toFormat("webp", { quality: 60 }),
 
-          }
+						backgroundBig: sharp =>
+							sharp.resize(1000, 1000)
+								   .runPipeline("background")
+								   .toFormat("jpeg", { quality: 90 }),
+
+						background: sharp =>
+							sharp.flip()
+								   .flop()
+								   .rotate(45)
+								   .sharpen()
+								   .normalize()
+								   .toColorspace("srgb")
+					}
         }
       },
     ],
@@ -73,3 +86,7 @@ See [sharp's API page](https://sharp.pixelplumbing.com/api-operation) for detail
 The function is called with a parameter named `sharp`, it is an object of the same type as the `sharp()`'s in [sharp's API page](https://sharp.pixelplumbing.com/api-operation).
 
 The return type of the function should be an `sharp` object.
+
+### Custom `.runPipeline()` method
+
+The loader adds a custom `.runPipeline()` method to the sharp object. It enables you to run another pipeline function so you dont have to repeat yourself as often.

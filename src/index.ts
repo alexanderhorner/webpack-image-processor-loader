@@ -100,8 +100,14 @@ function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, e
 
     const pipeline: Function = pipelines[pipelineName]
 
+    // Add custom runPipelineMethod to sharp class
+    sharp.prototype.runPipeline = function (nameOfPipeline: string) {
+        process(this, nameOfPipeline, pipelines, newExecutedPipelines)
+        return this
+    }
+
     sharpInstance = pipeline(sharpInstance)
-    
+
     return sharpInstance
 }
 
@@ -128,3 +134,4 @@ async function generateOutput(loaderContext:LoaderContext<any>, sharpInstance: S
 
     return fileLoaderResult
 }
+
