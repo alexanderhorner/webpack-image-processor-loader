@@ -40,26 +40,26 @@ module.exports = {
         loader: '../../dist/index.js',
         options: {
           pipelines: {
-						thumbnail: sharp => sharp.resize(1280, 720).toFormat("jpeg"),
+            thumbnail: sharp => sharp.resize(1280, 720).toFormat("jpeg"),
 
-						backgroundSmall: sharp =>
-							sharp.resize(500, 500)
-								   .runPipeline("background")
-								   .toFormat("webp", { quality: 60 }),
+            backgroundSmall: sharp =>
+              sharp.resize(500, 500)
+                   .runPipeline("background")
+                   .toFormat("webp", { quality: 60 }),
 
-						backgroundBig: sharp =>
-							sharp.resize(1000, 1000)
-								   .runPipeline("background")
-								   .toFormat("jpeg", { quality: 90 }),
+            backgroundBig: sharp =>
+              sharp.resize(1000, 1000)
+                   .runPipeline("background")
+                   .toFormat("jpeg", { quality: 90 }),
 
-						background: sharp =>
-							sharp.flip()
-								   .flop()
-								   .rotate(45)
-								   .sharpen()
-								   .normalize()
-								   .toColorspace("srgb")
-					}
+            background: sharp =>
+              sharp.flip()
+                   .flop()
+                   .rotate(45)
+                   .sharpen()
+                   .normalize()
+                   .toColorspace("srgb")
+          }
         }
       },
     ],
