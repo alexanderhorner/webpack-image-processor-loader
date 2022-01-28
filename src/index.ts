@@ -27,7 +27,7 @@ module.exports.raw = true; // make sure loader recieves raw input
 
 export default async function (this:LoaderContext<any>, source: Buffer) {
 
-    var callback = this.async();
+    const callback = this.async();
     
     const options = this.getOptions()
 
@@ -38,7 +38,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     const pipelineName = queryObject.pipeline
 
     if (typeof pipelineName != "string") {
-        var error = new Error("Pipeline not defined in query string")
+        let error = new Error("Pipeline not defined in query string")
         
         callback(error)
         return
@@ -49,13 +49,15 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
     //     baseDataPath: 'options',
     // });
 
-    var buffer:Buffer
+    let buffer:Buffer
+
+    let sharpInstance:Sharp
 
     try {
-        var sharpInstance = process(sharp(source), pipelineName, options.pipelines, [])  
+        sharpInstance = process(sharp(source), pipelineName, options.pipelines, [])  
     } catch (error) {
-        var errorString = String(error)
-        var errorError = new Error(errorString)
+        let errorString = String(error)
+        let errorError = new Error(errorString)
         
         callback(errorError)
         return
@@ -66,12 +68,16 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
         buffer = await generateOutput(this, sharpInstance)
 
     } catch (error) {
-        var errorString = String(error)
-        var errorError = new Error(errorString)
+        let errorString = String(error)
+        let errorError = new Error(errorString)
         
         callback(errorError)
         return
     }
+
+    const resourcePath = this.resourcePath.replace(this.context, '')
+
+    console.log(`\x1b[0mProcessed image \x1b[32m${resourcePath}\x1b[0m`)
 
     callback(null,  buffer)
 }

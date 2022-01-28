@@ -10,13 +10,13 @@ const replace_ext_1 = __importDefault(require("replace-ext"));
 // Webpack loader config
 module.exports.raw = true; // make sure loader recieves raw input
 async function default_1(source) {
-    var callback = this.async();
+    const callback = this.async();
     const options = this.getOptions();
     const query = this.resourceQuery;
     const queryObject = query_string_1.default.parse(query);
     const pipelineName = queryObject.pipeline;
     if (typeof pipelineName != "string") {
-        var error = new Error("Pipeline not defined in query string");
+        let error = new Error("Pipeline not defined in query string");
         callback(error);
         return;
     }
@@ -24,13 +24,14 @@ async function default_1(source) {
     //     name: 'Example Loader',
     //     baseDataPath: 'options',
     // });
-    var buffer;
+    let buffer;
+    let sharpInstance;
     try {
-        var sharpInstance = process((0, sharp_1.default)(source), pipelineName, options.pipelines, []);
+        sharpInstance = process((0, sharp_1.default)(source), pipelineName, options.pipelines, []);
     }
     catch (error) {
-        var errorString = String(error);
-        var errorError = new Error(errorString);
+        let errorString = String(error);
+        let errorError = new Error(errorString);
         callback(errorError);
         return;
     }
@@ -39,11 +40,13 @@ async function default_1(source) {
         buffer = await generateOutput(this, sharpInstance);
     }
     catch (error) {
-        var errorString = String(error);
-        var errorError = new Error(errorString);
+        let errorString = String(error);
+        let errorError = new Error(errorString);
         callback(errorError);
         return;
     }
+    const resourcePath = this.resourcePath.replace(this.context, '');
+    console.log(`\x1b[0mProcessed image \x1b[32m${resourcePath}\x1b[0m`);
     callback(null, buffer);
 }
 exports.default = default_1;
