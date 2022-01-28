@@ -77,7 +77,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     const resourcePath = this.resourcePath.replace(this.context, '')
 
-    console.log(`\x1b[0mProcessed image \x1b[32m${resourcePath}\x1b[0m`)
+    console.log(`\x1b[0mProcessed image \x1b[1m\x1b[32m${resourcePath}\x1b[0m with pipeline \x1b[1m\x1b[33m${pipelineName}\x1b[0m`)
 
     callback(null,  buffer)
 }
