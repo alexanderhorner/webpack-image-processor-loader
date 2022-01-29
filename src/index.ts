@@ -106,7 +106,7 @@ function process(sharpInstance:Sharp, pipelineName: string, pipelines: Object, e
 
     const pipeline: Function = pipelines[pipelineName]
 
-    // Add custom runPipelineMethod to sharp class
+    // Add custom runPipelineMethod to sharp instance
     sharp.prototype.runPipeline = function (nameOfPipeline: string) {
         process(this, nameOfPipeline, pipelines, newExecutedPipelines)
         return this

@@ -32,6 +32,13 @@ If you only want to process some but not all images use webpack's `oneOf`.
 ```javascript
 module.exports = {
   // ...
+  // IMPORTANT: Don't forget to enable caching!
+  //            It's also recommended to use a persistant folder (unlike the default node_modules/.cache/webpack).
+  cache: {
+    type: 'filesystem',
+    cacheDirectory: '/user/tom/persistant_folder/'
+  },
+  // ...
   module: {
     rules: [
       // ...

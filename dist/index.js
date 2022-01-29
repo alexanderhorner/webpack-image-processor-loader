@@ -69,7 +69,7 @@ function process(sharpInstance, pipelineName, pipelines, executedPipelines) {
     const newExecutedPipelines = Array.from(executedPipelines);
     newExecutedPipelines.push(pipelineName);
     const pipeline = pipelines[pipelineName];
-    // Add custom runPipelineMethod to sharp class
+    // Add custom runPipelineMethod to sharp instance
     sharp_1.default.prototype.runPipeline = function (nameOfPipeline) {
         process(this, nameOfPipeline, pipelines, newExecutedPipelines);
         return this;

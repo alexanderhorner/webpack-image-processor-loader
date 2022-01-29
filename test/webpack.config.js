@@ -7,6 +7,10 @@ const config = {
 		path: path.resolve(__dirname, 'dist'),
 	},
 	mode: 'production',
+	cache: {
+		type: 'filesystem',
+		cacheDirectory: '/Users/alexanderhorner/Documents/GitHub/webpack-image-processor-loader/.cache/webpack'
+	},
 	plugins: [
 		// Add your plugins here
 		// Learn more about plugins from https://webpack.js.org/configuration/plugins/
