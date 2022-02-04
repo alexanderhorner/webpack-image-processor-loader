@@ -39,8 +39,11 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     if (typeof pipelineName != "string") {
         let error = new Error("Pipeline not defined in query string")
+        this.emitWarning(error)
         
-        callback(error)
+        let output = await generateOutput(this, sharp(source))
+
+        callback(null, output)
         return
     }
     

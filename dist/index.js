@@ -17,7 +17,9 @@ async function default_1(source) {
     const pipelineName = queryObject.pipeline;
     if (typeof pipelineName != "string") {
         let error = new Error("Pipeline not defined in query string");
-        callback(error);
+        this.emitWarning(error);
+        let output = await generateOutput(this, (0, sharp_1.default)(source));
+        callback(null, output);
         return;
     }
     // validate(schema, options, {
