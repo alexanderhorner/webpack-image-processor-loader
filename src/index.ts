@@ -1,7 +1,7 @@
 // import { validate } from 'schema-utils';
 // import { Schema } from 'schema-utils/declarations/ValidationError';
 import fileLoader from 'file-loader'
-import { interpolateName } from 'loader-utils';
+// import { interpolateName } from 'loader-utils';
 import { LoaderContext } from 'webpack';
 
 import sharp, { Sharp } from 'sharp'
