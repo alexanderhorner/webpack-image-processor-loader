@@ -97,3 +97,32 @@ The return type of the function should be an `sharp` object.
 ### Custom `.runPipeline()` method
 
 The loader adds a custom `.runPipeline()` method to the sharp object. It enables you to run another pipeline function so you dont have to repeat yourself as often.
+
+### file-loader
+
+You can also include every option the [file-loader](https://www.npmjs.com/package/file-loader) provides. See [file-loader's npm page](https://www.npmjs.com/package/file-loader) for details
+
+```javascript
+module.exports = {
+  // ...
+  module: {
+    rules: [
+      // ...
+      {
+        test: /\.(png|jpe?g|webp|tiff?)/i,
+        loader: 'webpack-image-processor-loader',
+        options: {
+          pipelines: {
+            // ...
+          }
+          name: '[name]-[contenthash].[ext]',
+          outputPath: 'images',
+          esModule: true
+          // For more options see the file-loader package
+        }
+      },
+    ],
+  },
+};
+
+```

@@ -1,6 +1,6 @@
 {
   "name": "webpack-image-processor-loader",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A webpack loader for processing images.",
   "homepage": "https://github.com/alexanderhorner/webpack-image-processor-loader#readme",
   "repository": {
