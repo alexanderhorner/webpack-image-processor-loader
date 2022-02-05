@@ -2,15 +2,16 @@ const { normalize } = require('path');
 const path = require('path');
 
 const config = {
+	cache: false,
 	entry: './src/index.ts',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 	},
 	mode: 'production',
-	cache: {
-		type: 'filesystem',
-		cacheDirectory: '/Users/alexanderhorner/Documents/GitHub/webpack-image-processor-loader/.cache/webpack'
-	},
+	// cache: {
+	// 	type: 'filesystem',
+	// 	cacheDirectory: '/Users/alexanderhorner/Documents/GitHub/webpack-image-processor-loader/.cache/webpack'
+	// },
 	plugins: [
 		// Add your plugins here
 		// Learn more about plugins from https://webpack.js.org/configuration/plugins/
@@ -26,6 +27,7 @@ const config = {
 				test: /\.(png|jpe?g|webp|tiff?)$/i,
 				loader: '../dist/index.js',
 				options: {
+					outputDir: 'images',
 					pipelines: {
 						thumbnail: sharp => sharp.resize(1280, 720).toFormat("jpeg"),
 

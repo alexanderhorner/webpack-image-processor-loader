@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "test": "tsc; cd test; webpack",
+    "test": "tsc; cd test; rm -rf dist; webpack",
     "benchmark": "tsc; cd test/benchmark; webpack"
   },
   "author": "Alexander Horner",
