@@ -114,7 +114,7 @@ module.exports = {
         options: {
           pipelines: {
             // ...
-          }
+          },
           name: '[name]-[contenthash].[ext]',
           outputPath: 'images',
           esModule: true
