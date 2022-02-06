@@ -15,7 +15,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "tsc; cd test; rm -rf dist; webpack",
-    "benchmark": "tsc; cd test/benchmark; webpack"
+    "benchmark": "tsc; cd test/benchmark; rm -rf dist; webpack"
   },
   "author": "Alexander Horner",
   "license": "GPL-3.0-or-later",

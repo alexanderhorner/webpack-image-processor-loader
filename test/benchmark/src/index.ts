@@ -2,9 +2,18 @@ const fs = require("fs")
 
 const files = fs.readdirSync("./img")
 
-files.forEach((file: string) => {
-    require("./" + file + "?pipeline=benchmark1");
-    require("./" + file + "?pipeline=benchmark2");
-    require("./" + file + "?pipeline=benchmark3");
-    require("./" + file + "?pipeline=benchmark4");
+const versions = [
+    'benchmark1',
+    'benchmark2',
+    'benchmark3',
+    'benchmark4'
+]
+
+files.forEach((file: any) => {
+
+    require(`./img/${file}?pipeline=benchmark1`)
+    require(`./img/${file}?pipeline=benchmark2`)
+    require(`./img/${file}?pipeline=benchmark3`)
+    require(`./img/${file}?pipeline=benchmark4`)
+
 });
