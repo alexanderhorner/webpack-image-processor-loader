@@ -16,7 +16,7 @@ async function default_1(source) {
     const callback = this.async();
     const defaultOptions = {
         pipelines: {},
-        name: '[name]-[contenthash].[ext]',
+        name: '[name]-[pipelinename]-[md4:hash:hex:5].[ext]',
         outputPath: 'images'
     };
     let options = this.getOptions();
@@ -34,6 +34,7 @@ async function default_1(source) {
                 format: path_1.default.extname(this.resourcePath).replace('.', '')
             }
         };
+        options.name = options.name.replace('[pipelinename]', 'original');
         let output = await generateOutput(this, resultObj, options);
         callback(null, output);
         return;
@@ -52,6 +53,7 @@ async function default_1(source) {
         // Output sharpInstance to Buffer and return it back to webpack
         try {
             const resultObj = await sharpInstance.toBuffer({ resolveWithObject: true });
+            options.name = options.name.replace('[pipelinename]', pipelineName);
             output = await generateOutput(this, resultObj, options);
         }
         catch (error) {

@@ -32,7 +32,7 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
 
     const defaultOptions = {
 		pipelines: {},
-        name: '[name]-[contenthash].[ext]',
+        name: '[name]-[pipelinename]-[md4:hash:hex:5].[ext]',
         outputPath: 'images'
     }
     
@@ -59,6 +59,8 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
                 format: path.extname(this.resourcePath).replace('.', '')
             }
         }
+
+        options.name = options.name.replace('[pipelinename]', 'original')
         
         let output = await generateOutput(this, resultObj, options)
 
@@ -82,6 +84,8 @@ export default async function (this:LoaderContext<any>, source: Buffer) {
         // Output sharpInstance to Buffer and return it back to webpack
         try {
             const resultObj = await sharpInstance.toBuffer({ resolveWithObject: true })
+
+            options.name = options.name.replace('[pipelinename]', pipelineName)
 
             output = await generateOutput(this, resultObj, options)
 

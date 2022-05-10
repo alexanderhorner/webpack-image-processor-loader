@@ -115,7 +115,7 @@ module.exports = {
           pipelines: {
             // ...
           },
-          name: '[name]-[contenthash].[ext]',
+          name: '[name]-[pipelinename]-[contenthash].[ext]',
           outputPath: 'images',
           esModule: true
           // For more options see the file-loader package
@@ -126,3 +126,5 @@ module.exports = {
 };
 
 ```
+
+For the name options you can *additionally* use \[pipelinename\]. It will be replaced by the pipeline name or "original" if there is no pipeline defined.
